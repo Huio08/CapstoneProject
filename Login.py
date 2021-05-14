@@ -95,7 +95,7 @@ def validacion_datos():
                 #messagebox.showinfo(message="Ingreso exitoso",title="CORRECTO"+i[0])                
             break      
         else:
-            messagebox.showinfo(message="Usuario y/o contraseña incorrecto",title="ERROR")
+            
             break    
 
         conexion.close()
