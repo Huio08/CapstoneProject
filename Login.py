@@ -88,17 +88,17 @@ def validacion_datos():
             #from Principal import formulario
 
             Principal.formulario(tipoUsuario)
-            #for i in resultado:
-             #   pantalla1.destroy()
-              #  formulario()
-               # i+=1
-                #messagebox.showinfo(message="Ingreso exitoso",title="CORRECTO"+i[0])                
+                #for i in resultado:
+                #   pantalla1.destroy()
+                #  formulario()
+                # i+=1
+                    #messagebox.showinfo(message="Ingreso exitoso",title="CORRECTO"+i[0])                
             break      
         else:
-            
+            messagebox.showinfo(message="Error de login",title="Incorrecto")
             break    
-
-        conexion.close()
+               
+    #conexion.close()
    
 menu_pantalla()
 

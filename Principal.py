@@ -22,8 +22,7 @@ def formulario(usuarioTipo):
     pantalla2.resizable(width=0, height=0)
     
     Label(pantalla2, text="BIENVENIDO AL SISTEMA DE TICKETS", bg="green", fg="white", width="300", height="3", font=("calibri", 14)).pack()
-    #Label(pantalla2, text="").pack()
-
+    
     #global nombreUsuario
 
     lbl1 = Label(pantalla2, text="Nombres:", bg="white", font=("verdana",9))
@@ -36,6 +35,15 @@ def formulario(usuarioTipo):
     lbl2.place(x=20, y=150, width=65, height=26 )
     apellidoUser = Entry(pantalla2)
     apellidoUser.place(x=90, y=153, width=100, height=20)
+
+    var=StringVar(pantalla2)
+    var.set("Incidencia")
+    opciones=['Incidencia','Problema','Informativo','Proyecto']
+    lblMenu = Label(pantalla2, text="Categoria:", bg="white", font=("verdana",9))
+    lblMenu.place(x=210, y=153, width=65, height=26 )
+    opcion=ttk.OptionMenu(pantalla2,var, *opciones)
+    opcion.config(width=20)
+    opcion.place(x=283, y=153, width=100, height=26)
 
     global correo_ing
     correo_ing=StringVar()
@@ -84,8 +92,7 @@ def enviarTicket():
     server.login(config('my_email'), config('my_password'))
 
     server.sendmail(config('my_email'), correo_ing.get(), result)
-    #server.sendmail(config('my_email'),'hugio1989@gmail.com', result)
-
+    
     server.quit()
 
     messagebox.showinfo(message="Mensaje enviado",title="Notificación")
