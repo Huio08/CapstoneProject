@@ -1,105 +1,82 @@
-import tkinter
+from tkinter import Tk,Label,Button,Entry, Frame
 from tkinter import *
+#import tkinter
+import pyodbc
+from tkinter import ttk
 from tkinter import messagebox
 from conexion import conexion
-import pyodbc
-import Principal
 
-def menu_pantalla():
-    global pantalla
-    pantalla = Tk()
-    pantalla.geometry("300x320")
-    pantalla.title("Sistema de Tickets (TI)")
-    pantalla.iconbitmap("imagenes/imagen6.ico")
-
-    image = PhotoImage(file="imagenes/imagen6.gif")
-    image = image.subsample(2, 2)
-
-    label = Label(image = image)
-    label.pack()
-
-    Label(text="Acceso al sistema", bg="green", fg="white", width="350", height="2", font=("calibri", 15)).pack()
-    Label(text="").pack()
-
-    Button(text="USUARIO", height="2", width="20", command= lambda:clic_boton(1)).pack()
-    Label(text="").pack()
-    Button(text="ADMIN", height="2", width="20", command= lambda:clic_boton(2)).pack()
-
-    pantalla.mainloop()
-
-def clic_boton(boton):
+class FrInicio(Frame):
     
-    global tipoUsuario
-    pantalla.destroy()
-    #tipoUsuario=1
-    if boton == 1:
-        tipoUsuario ="Estandar"
+    def __init__(self, master=None):
+        super().__init__(master,width=280,height=350, bg="lightgray")
+        self.master = master
+        self.pack()
+        self.frTitulo()
+        self.crearBotones()
+
+    def frTitulo(self):
+        self.image = PhotoImage(file="imagenes/imagen6.gif")
+        self.image = self.image.subsample(2, 2)
+        self.label = Label(image = self.image)
+        self.label.place(x=90,y=0)
+
+        self.label = Label(self, text="Ingresar usuario y contraseña", bg="lightgreen")
+        self.label.place(x=0,y=117, width=280, height=40)
+
+    def crearBotones(self):         
+                        
+        self.var=StringVar(root)        
+        self.opciones=['Estandar','Admin','Estandar']
+        self.opcion=ttk.OptionMenu(root,self.var, *self.opciones)
+        self.opcion.place(x=140, y=164, width=80, height=22)
+                         
+        self.label1 = Label(self, text="USUARIO:", bg="lightblue")
+        self.txtUsuario = Entry(self, bg="white")
+        self.label2 = Label(self, text="CONTRASEÑA:", bg="lightblue")
+        self.txtContrasena = Entry(self, bg="white", show="*")
         
-    if boton == 2:
-        tipoUsuario ="Admin"
-    inicio_sesion()
+        self.label1.place(x=40, y=198, width=60, height=20)
+        self.txtUsuario.place(x=130, y=195, width=100, height=25)
+        self.label2.place(x=40, y=238, width=85, height=20)
+        self.txtContrasena.place(x=130, y=235, width=100, height=25)
 
-def inicio_sesion():
+        self.btn1 = Button(self, text="INGRESAR", command=self.validacionDatos)        
+        self.btn1.place(x=100, y=275, width=90, height=50)
+
+    def validacionDatos(self):
     
-    #pantalla.destroy()
-    
-    global pantalla1
-    pantalla1 = Tk()
-    #pantalla1 = Toplevel(pantalla)
-    pantalla1.geometry("350x280")
-    pantalla1.title("Inicio de Sesión ("+tipoUsuario+")")
-    pantalla1.iconbitmap("imagenes/imagen6.ico")
+        while True:
+            fcursor = conexion.cursor()
+            tipoUsuario = self.var.get()
+            fcursor.execute("Select usuario,pass from Usuarios where usuario='"+self.txtUsuario.get()+"' and pass='"+self.txtContrasena.get()+"' and tipoUsuario='"+tipoUsuario+"' ")            
+            resultado = fcursor.fetchall()
 
-    Label(pantalla1, text="Por favor ingrese su Usuario y Contraseña", bg="green", fg="white", width="300", height="3", font=("calibri", 14)).pack()
-    Label(pantalla1, text="").pack()
+            usuario = self.txtUsuario.get()
+            
+            if resultado:               
+                                
+                root.destroy()
+                
+                import Main
+                if tipoUsuario=="Estandar":                                  
+                    Main.Aplicacion(usuario)
+                
+                else: 
+                    tipoUsuario=="Admin"
+                    Main.FrameAdmin(usuario)                    
+                    
+                break      
+            else:
+                messagebox.showinfo(message="Error al ingresar los datos del usuario o verifique su tipo de Usuario",title="Incorrecto")
+                break
+            
+root = Tk()
+root.wm_title("Sistema de tickets TI")
+root.wm_iconbitmap("imagenes/imagen6.ico")
+root.resizable(width=0, height=0)
+app = FrInicio(root)
+app.mainloop()
 
-    global nombreUsuario_verify
-    global contrasenaUsuario_verify
-    
-    nombreUsuario_verify=StringVar()
-    contrasenaUsuario_verify=StringVar()
-
-    global nombre_usuario_entry
-    global contrasena_usuario_entry
-
-    Label(pantalla1, text="USUARIO").pack()
-    nombre_usuario_entry = Entry(pantalla1, textvariable=nombreUsuario_verify)
-    nombre_usuario_entry.pack()
-    Label(pantalla1).pack()
-
-    Label(pantalla1, text="CONTRASEÑA").pack()
-    contrasena_usuario_entry = Entry(pantalla1, show="*", textvariable=contrasenaUsuario_verify)
-    contrasena_usuario_entry.pack()
-    Label(pantalla1).pack()
-
-    Button(pantalla1, text="Iniciar Sesión", command=validacion_datos).pack()
-    
-def validacion_datos():
-    
-    while True:
-        fcursor = conexion.cursor()
-
-        fcursor.execute("Select usuario,pass from Ingreso where usuario='"+nombreUsuario_verify.get()+"' and pass='"+contrasenaUsuario_verify.get()+"'")
-        
-        resultado = fcursor.fetchall()
-   
-        if resultado:
-            pantalla1.destroy()
-            #from Principal import formulario
-
-            Principal.formulario(tipoUsuario)
-                #for i in resultado:
-                #   pantalla1.destroy()
-                #  formulario()
-                # i+=1
-                    #messagebox.showinfo(message="Ingreso exitoso",title="CORRECTO"+i[0])                
-            break      
-        else:
-            messagebox.showinfo(message="Error de login",title="Incorrecto")
-            break    
-               
-    #conexion.close()
-   
-menu_pantalla()
 
 

@@ -3,7 +3,7 @@ import pyodbc
 
 #Datos del servidor
 server = 'LAPTOP-T49VU3LR'
-database = 'Ticket'
+database = 'TicketBD'
 usuarioBD = 'sa'
 passwordDB = '1234'
 
